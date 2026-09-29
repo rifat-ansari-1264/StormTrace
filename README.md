@@ -40,6 +40,12 @@ Python 3.10+ is recommended. From PowerShell in the project folder:
 
 Open `http://127.0.0.1:8000/weather-tracker.html`. Internet access is required for the weather APIs, Leaflet, and map tiles. API documentation: `http://127.0.0.1:8000/docs`. Run the existing smoke checker from another terminal with `.venv\Scripts\python.exe live_check.py`.
 
+## Deploy to Vercel
+
+Vercel's Python FastAPI entrypoint is `api/index.py`, which re-exports the existing `main:app`; the backend remains in `main.py`. `vercel.json` explicitly includes `weather-tracker.html` in the function bundle because FastAPI serves it with `FileResponse`. The app's dashboard API requests are same-origin, so they use the deployed Vercel host as well as the local Uvicorn host. No route rewrite or second backend is needed: the FastAPI app handles `/`, `/weather-tracker.html`, and the existing `/api/...` routes.
+
+Deploy the project root (the directory containing `vercel.json`) from the Vercel CLI with `vercel` for a preview or `vercel --prod` for production, or connect the repository with that same project root. The existing local command remains unchanged. Vercel Functions use ephemeral instance storage, so the git-ignored `.stormtrace_spatial_cache.json` is not deployed as a durable cache; forecast endpoints obtain provider data on a cold instance and retain only the instance's in-memory cache. The local cached snapshot is left untouched and is not added to Git.
+
 ## Implemented and limitations
 
 **Implemented:** existing real point forecast and explicitly ERA5-selected baseline requests; ECMWF spatial forecast ingestion; configurable coarse grid; per-cell daily anomalies and normalized scores; threshold masks; connected cell regions and GeoJSON footprints; consecutive-day proximity/overlap matching; selected-day map, site-to-grid snapping, and cell selection; in-memory caching, retries and partial-feed status.
