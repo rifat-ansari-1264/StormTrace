@@ -4,5 +4,11 @@
     "api/index.py": {
       "includeFiles": "weather-tracker.html"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index"
+    }
+  ]
 }
